@@ -73,7 +73,7 @@
                 const char * stringValue = [string cStringUsingEncoding:NSUTF8StringEncoding];
                 stream << stringValue;
             } else if([arg2 isKindOfClass:[NSNumber class]]) {
-                NSNumber *number = (NSNumber*)arg;
+                NSNumber *number = (NSNumber*)arg2;
                 if(CFNumberIsFloatType((CFNumberRef)number)) {
                     Float32 floatValue = [number floatValue];
                     stream << floatValue;
