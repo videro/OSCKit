@@ -34,11 +34,11 @@ NSInteger roundUp4(NSInteger value) {
             size += 4;
         } else if([arg isKindOfClass:[NSArray class]]){
             size += 2;
-            for (NSObject *arg in self.arguments) {
-                if([arg isKindOfClass:[NSString class]]) {
-                    NSString *string = (NSString*)arg;
+            for (NSObject *arg2 in (NSArray*) arg) {
+                if([arg2 isKindOfClass:[NSString class]]) {
+                    NSString *string = (NSString*)arg2;
                     size += roundUp4([string lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1);
-                } else if([arg isKindOfClass:[NSNumber class]]) {
+                } else if([arg2 isKindOfClass:[NSNumber class]]) {
                     size += 4;
                 } else {
                     [[NSException exceptionWithName:@"OSCProtocolException"
