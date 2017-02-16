@@ -76,30 +76,47 @@
 }
 
 + (OSCMessage*)convertMessage:(const osc::ReceivedMessage&)message {
-  NSString *address = nil;
-  NSMutableArray *arguments = [NSMutableArray array];
-
-  address = [NSString stringWithUTF8String:message.AddressPattern()];
-
-  for (osc::ReceivedMessage::const_iterator arg = message.ArgumentsBegin(); arg != message.ArgumentsEnd(); ++arg) {
-    if (arg->IsInt32()) {
-      [arguments addObject:@(arg->AsInt32Unchecked())];
-    } else if (arg->IsFloat()) {
-      [arguments addObject:@(arg->AsFloatUnchecked())];
-    } else if (arg->IsString()) {
-      [arguments addObject:[NSString stringWithUTF8String:arg->AsStringUnchecked()]];
-    } else if (arg->IsNil()) {
-        continue;
-    } else if (arg->IsBool()) {
-        [arguments addObject:@(arg->AsBoolUnchecked())];
-    } else {
-      [[NSException exceptionWithName:@"OSCProtocolException"
-                               reason:[NSString stringWithFormat:@"argument is not an int, float, or string, but: %c", arg->TypeTag()]
-                             userInfo:nil] raise];
+    NSString *address = nil;
+    NSMutableArray *arguments = [NSMutableArray array];
+    
+    address = [NSString stringWithUTF8String:message.AddressPattern()];
+    NSMutableArray *partArray = NULL;
+    for (osc::ReceivedMessage::const_iterator arg = message.ArgumentsBegin(); arg != message.ArgumentsEnd(); ++arg) {
+        if (arg->IsInt32()) {
+            if(partArray == NULL){
+                [arguments addObject:@(arg->AsInt32Unchecked())];
+            }else{
+                [partArray addObject:@(arg->AsInt32Unchecked())];
+            }
+        } else if (arg->IsFloat()) {
+            if(partArray == NULL){
+                [arguments addObject:@(arg->AsFloatUnchecked())];
+            }else{
+                [partArray addObject:@(arg->AsFloatUnchecked())];
+            }
+        } else if (arg->IsString()) {
+            if(partArray == NULL){
+                [arguments addObject:[NSString stringWithUTF8String:arg->AsStringUnchecked()]];
+            }else{
+                [partArray addObject:[NSString stringWithUTF8String:arg->AsStringUnchecked()]];
+            }
+        } else if (arg->IsNil()) {
+            continue;
+        } else if (arg->IsBool()) {
+            [arguments addObject:@(arg->AsBoolUnchecked())];
+        } else if (arg->IsArrayBegin()) {
+            partArray = [NSMutableArray array];
+        } else if (arg->IsArrayEnd()) {
+            [arguments addObject:partArray];
+            partArray = NULL;
+        } else {
+            [[NSException exceptionWithName:@"OSCProtocolException"
+                                     reason:[NSString stringWithFormat:@"argument is not an int, float, or string, but: %c", arg->TypeTag()]
+                                   userInfo:nil] raise];
+        }
     }
-  }
-
-  return [[OSCMessage alloc] initWithAddress:address arguments:arguments];
+    
+    return [[OSCMessage alloc] initWithAddress:address arguments:arguments];
 }
 
 + (void)unpackBundle:(const osc::ReceivedBundle&)bundle withCallback:(OSCMessageCallback)callback {
