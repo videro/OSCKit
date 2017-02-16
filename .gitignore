@@ -2,3 +2,5 @@
 Pods/
 xcuserdata/
 *.xccheckout
+Build
+DerivedData

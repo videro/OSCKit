@@ -94,7 +94,7 @@
         [arguments addObject:@(arg->AsBoolUnchecked())];
     } else {
       [[NSException exceptionWithName:@"OSCProtocolException"
-                               reason:@"argument is not an int, float, or string"
+                               reason:[NSString stringWithFormat:@"argument is not an int, float, or string, but: %c", arg->TypeTag()]
                              userInfo:nil] raise];
     }
   }
