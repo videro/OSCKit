@@ -65,6 +65,29 @@
         SInt32 integerValue = [number intValue];
         stream << integerValue;
       }
+    } else if([arg isKindOfClass:[NSArray class]]) {
+        stream << osc::BeginArray;
+        for (NSObject *arg2 in (NSArray*)arg) {
+            if([arg2 isKindOfClass:[NSString class]]) {
+                NSString *string = (NSString*)arg;
+                const char * stringValue = [string cStringUsingEncoding:NSUTF8StringEncoding];
+                stream << stringValue;
+            } else if([arg2 isKindOfClass:[NSNumber class]]) {
+                NSNumber *number = (NSNumber*)arg;
+                if(CFNumberIsFloatType((CFNumberRef)number)) {
+                    Float32 floatValue = [number floatValue];
+                    stream << floatValue;
+                } else {
+                    SInt32 integerValue = [number intValue];
+                    stream << integerValue;
+                }
+            } else {
+                [[NSException exceptionWithName:@"OSCProtocolException"
+                                         reason:[NSString stringWithFormat:@"argument is not an int, float, or string"]
+                                       userInfo:nil] raise];
+            }
+        }
+        stream << osc::EndArray;
     } else {
       [[NSException exceptionWithName:@"OSCProtocolException"
         reason:[NSString stringWithFormat:@"argument is not an int, float, or string"]
