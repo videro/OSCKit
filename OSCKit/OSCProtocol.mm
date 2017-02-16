@@ -88,6 +88,10 @@
       [arguments addObject:@(arg->AsFloatUnchecked())];
     } else if (arg->IsString()) {
       [arguments addObject:[NSString stringWithUTF8String:arg->AsStringUnchecked()]];
+    } else if (arg->IsNil()) {
+        continue;
+    } else if (arg->IsBool()) {
+        [arguments addObject:@(arg->AsBoolUnchecked())];
     } else {
       [[NSException exceptionWithName:@"OSCProtocolException"
                                reason:@"argument is not an int, float, or string"
